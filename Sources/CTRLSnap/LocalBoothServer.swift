@@ -2,7 +2,7 @@ import Foundation
 import Network
 import Darwin
 
-final class LocalBoothServer: ObservableObject {
+final class LocalBoothServer: ObservableObject, @unchecked Sendable {
     @Published private(set) var url: URL?
     @Published private(set) var error: String?
 

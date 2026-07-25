@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+MODE="${1:-run}"
+APP_PROCESS="CTRLSnap"
+APP_DISPLAY_NAME="Snappy Booth"
+BUNDLE_ID="com.ctrloverdrive.ctrlsnap"
+MIN_SYSTEM_VERSION="14.0"
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+DIST_DIR="$ROOT_DIR/dist-mac"
+OUTPUT_DIR="${SNAPPY_BOOTH_OUTPUT_DIR:-$DIST_DIR}"
+APP_BUNDLE="$OUTPUT_DIR/$APP_DISPLAY_NAME.app"
+LEGACY_APP_BUNDLE="$OUTPUT_DIR/CTRL SNAP.app"
+APP_CONTENTS="$APP_BUNDLE/Contents"
+APP_MACOS="$APP_CONTENTS/MacOS"
+APP_RESOURCES="$APP_CONTENTS/Resources"
+APP_BINARY="$APP_MACOS/$APP_PROCESS"
+INFO_PLIST="$APP_CONTENTS/Info.plist"
+
+cd "$ROOT_DIR"
+npm run build:mac-web
+swift build
+./script/build_app_icon.sh
+BUILD_BINARY="$(swift build --show-bin-path)/$APP_PROCESS"
+
+mkdir -p "$OUTPUT_DIR"
+rm -rf "$LEGACY_APP_BUNDLE" "$APP_BUNDLE"
+mkdir -p "$APP_MACOS" "$APP_RESOURCES/WebApp"
+cp "$BUILD_BINARY" "$APP_BINARY"
+cp -R "$ROOT_DIR/mac-dist/." "$APP_RESOURCES/WebApp/"
+cp "$ROOT_DIR/mac-assets/AppIcon.icns" "$APP_RESOURCES/AppIcon.icns"
+chmod +x "$APP_BINARY"
+
+cat >"$INFO_PLIST" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleExecutable</key>
+  <string>$APP_PROCESS</string>
+  <key>CFBundleIdentifier</key>
+  <string>$BUNDLE_ID</string>
+  <key>CFBundleName</key>
+  <string>$APP_DISPLAY_NAME</string>
+  <key>CFBundleDisplayName</key>
+  <string>Snappy Booth</string>
+  <key>CFBundleIconFile</key>
+  <string>AppIcon.icns</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+  <key>CFBundleShortVersionString</key>
+  <string>1.0</string>
+  <key>CFBundleVersion</key>
+  <string>1</string>
+  <key>LSMinimumSystemVersion</key>
+  <string>$MIN_SYSTEM_VERSION</string>
+  <key>NSPrincipalClass</key>
+  <string>NSApplication</string>
+  <key>NSCameraUsageDescription</key>
+  <string>Snappy Booth uses the camera only to create your local event photo.</string>
+  <key>NSLocalNetworkUsageDescription</key>
+  <string>Snappy Booth shares finished prints with phones on this venue network.</string>
+  <key>NSHighResolutionCapable</key>
+  <true/>
+</dict>
+</plist>
+PLIST
+
+/usr/bin/xattr -cr "$APP_BUNDLE"
+/usr/bin/codesign --force --deep --sign - "$APP_BUNDLE" >/dev/null
+
+open_app() {
+  /usr/bin/open "$APP_BUNDLE"
+}
+
+case "$MODE" in
+  run)
+    open_app
+    ;;
+  --debug|debug)
+    lldb -- "$APP_BINARY"
+    ;;
+  --logs|logs)
+    open_app
+    /usr/bin/log stream --info --style compact --predicate "process == \"$APP_PROCESS\""
+    ;;
+  --telemetry|telemetry)
+    open_app
+    /usr/bin/log stream --info --style compact --predicate "subsystem == \"$BUNDLE_ID\""
+    ;;
+  --verify|verify)
+    test -x "$APP_BINARY"
+    test -f "$APP_RESOURCES/WebApp/index.html"
+    /usr/bin/codesign --verify --deep --strict "$APP_BUNDLE"
+    ;;
+  --package|package)
+    echo "$APP_BUNDLE"
+    ;;
+  *)
+    echo "usage: $0 [run|--debug|--logs|--telemetry|--verify|--package]" >&2
+    exit 2
+    ;;
+esac

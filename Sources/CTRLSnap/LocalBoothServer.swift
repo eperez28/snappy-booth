@@ -28,15 +28,16 @@ final class LocalBoothServer: ObservableObject, @unchecked Sendable {
                 self?.handle(connection)
             }
             listener.stateUpdateHandler = { [weak self] state in
+                guard let self else { return }
                 switch state {
                 case .ready:
-                    Task { @MainActor in
-                        self?.url = URL(string: "http://127.0.0.1:\(self?.port.rawValue ?? 47832)/")
+                    Task { @MainActor [self] in
+                        self.url = URL(string: "http://127.0.0.1:\(self.port.rawValue)/")
                     }
                 case .failed(let failure):
-                    Task { @MainActor in
-                        self?.listener = nil
-                        self?.error = failure.localizedDescription
+                    Task { @MainActor [self] in
+                        self.listener = nil
+                        self.error = failure.localizedDescription
                     }
                 default:
                     break

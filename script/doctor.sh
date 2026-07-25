@@ -30,7 +30,8 @@ for required_path in \
   app/Booth.tsx \
   Sources/CTRLSnap/CTRLSnapApp.swift \
   openhome/ctrl-snap-host/background.py \
-  skills/snappy-booth-setup/SKILL.md; do
+  skills/snappy-booth-setup/SKILL.md \
+  skills/openhome-local-bridge/SKILL.md; do
   [[ -e "$required_path" ]] || fail "missing $required_path"
 done
 pass "all three monorepo components are present"

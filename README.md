@@ -11,7 +11,7 @@ The repository is one monorepo with three public pieces:
 | --- | --- | --- |
 | Booth app | repository root, `app/`, `Sources/` | Chrome/LAN web app plus a native macOS wrapper |
 | OpenHome ability | `openhome/ctrl-snap-host/` | Local event bridge, countdown, outfit hype, and post-photo conversation |
-| Agent setup kit | `AGENTS.md`, `skills/`, `script/` | A repeatable setup and verification path for Codex or another coding harness |
+| Agent setup kit | `AGENTS.md`, `skills/`, `script/` | Repeatable booth setup plus a reusable OpenHome local-bridge builder |
 
 No source from the private Snappy Mac app is included or required.
 
@@ -109,6 +109,26 @@ A useful setup prompt is:
 > Read AGENTS.md, use the snappy-booth-setup skill, install the project, run the
 > full doctor, and launch the requested local mode. Do not deploy it or add
 > secrets.
+
+### Reuse the OpenHome bridge skill
+
+`skills/openhome-local-bridge/` is app-agnostic. Give that folder to a
+Codex-compatible agent or point the agent at this repository, then ask:
+
+```bash
+cp -R skills/openhome-local-bridge "${CODEX_HOME:-$HOME/.codex}/skills/"
+```
+
+Restart the harness if it does not automatically reload installed skills, then
+ask:
+
+> Use $openhome-local-bridge to connect this local Mac or web app to my OpenHome
+> device, scaffold the clients and Local Ability, package it, and verify one
+> real event without committing secrets.
+
+The skill includes secure bridge templates, Swift and TypeScript clients,
+packaging automation, and the LAN/CORS/loopback troubleshooting that usually
+costs the most setup time.
 
 ## Verify
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build OpenHome Local Bridge"
+  short_description: "Connect local Mac and web apps to OpenHome"
+  default_prompt: "Use $openhome-local-bridge to connect this local app to an OpenHome device and package the ability."

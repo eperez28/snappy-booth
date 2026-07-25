@@ -22,7 +22,8 @@ voice-host ability.
 1. Booth app: `app/`, `public/`, `mac-web/`, `Sources/CTRLSnap/`, and root
    JavaScript/Swift configuration.
 2. OpenHome ability: `openhome/ctrl-snap-host/`.
-3. Agent setup kit: this file, `skills/snappy-booth-setup/`, and `script/`.
+3. Agent setup kit: this file, `skills/snappy-booth-setup/`,
+   `skills/openhome-local-bridge/`, and `script/`.
 
 ## Setup
 

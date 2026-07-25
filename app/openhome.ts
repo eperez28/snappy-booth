@@ -9,9 +9,8 @@ export type CtrlSnapHostEvent =
     }
   | { type: "goodbye"; session_id?: string };
 
-const DEFAULT_DEVKIT_URL = "http://192.168.4.51:8765";
-const DEFAULT_BRIDGE_TOKEN =
-  "ctrl-snap-local-64f2b731e5c947b8a2db09c1";
+const DEFAULT_DEVKIT_URL = "http://127.0.0.1:8765";
+const DEFAULT_BRIDGE_TOKEN = "snappy-booth-local-bridge";
 
 function connection() {
   const runtime = window as typeof window & {

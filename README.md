@@ -1,73 +1,134 @@
 # Snappy Booth
 
-A local-first party photo booth for CTRL OVERDRIVE.
+Snappy Booth is a local-first party photo booth built for CTRL OVERDRIVE. It
+captures a webcam photo, prints it through a Three.js Polaroid animation, offers
+six event filters, and hands the finished image to a phone by QR code or direct
+download.
 
-## Launch the Mac app
+The repository is one monorepo with three public pieces:
 
-The packaged local app is at `dist-mac/Snappy Booth.app`. It contains its own
-static booth build and native local photo server, so it does not need Node,
-npm, a browser tab, or internet access at runtime.
+| Piece | Location | What it provides |
+| --- | --- | --- |
+| Booth app | repository root, `app/`, `Sources/` | Chrome/LAN web app plus a native macOS wrapper |
+| OpenHome ability | `openhome/ctrl-snap-host/` | Local event bridge, countdown, outfit hype, and post-photo conversation |
+| Agent setup kit | `AGENTS.md`, `skills/`, `script/` | A repeatable setup and verification path for Codex or another coding harness |
 
-Build and launch it with:
+No source from the private Snappy Mac app is included or required.
 
-```bash
-./script/build_and_run.sh
-```
+## Fast setup
 
-For OpenHome outfit hype, keep the local vision credential in the ignored
-workspace file:
+Requirements:
 
-```text
-.env.local
-OPENAI_API_KEY=your-project-key
-```
-
-The native Mac server reads that value locally and sends OpenHome only the
-finished compliment. The key is never bundled into the app or exposed to the
-booth web view.
-
-The Codex Run button uses that same command. The app is ad-hoc signed for local
-use. It is not notarized for public distribution.
-
-## Start the booth
-
-Requires Node.js 22 or newer.
+- macOS 14 or newer for the native wrapper
+- Node.js 22.13 or newer
+- Swift 5.10 or newer for the native wrapper
+- Python 3 for OpenHome ability checks
 
 ```bash
-npm install
+git clone https://github.com/eperez28/snappy-booth.git
+cd snappy-booth
+./script/setup.sh
+```
+
+The setup script installs locked Node dependencies, creates a local Python
+environment for validating the OpenHome helper, and runs the quick doctor.
+It does not create, request, or store API keys.
+
+## Run in Chrome
+
+For a booth used only on this Mac:
+
+```bash
 npm run dev
 ```
 
-Open `http://localhost:3000` in Chrome, Safari, or Edge and allow camera
-access. Tap the shutter, press Space, or press Command-Shift-B to take the
-photo.
+Open `http://localhost:3000`, allow camera access, and use the on-screen
+controls, Space, or Command-Shift-B.
 
-The booth flow is:
-
-1. Press Space, Command-Shift-B, or tap
-2. Watch the Polaroid print
-3. Pick a filter, then save or scan the QR code
-
-## Phone QR handoff
-
-For guests to scan prints on the same Wi-Fi network:
+For QR downloads on phones connected to the same Wi-Fi:
 
 ```bash
 npm run dev:lan
 ```
 
-Open the booth using the Mac's network address shown in the terminal (for
-example, `http://192.168.1.50:3000`) rather than `localhost`. The QR code will
-then use that reachable address. Prints live only in the running local booth
-process and expire when it restarts.
+Open the network URL printed by the development server, such as
+`http://192.168.1.50:3000`. Do not open the booth as `localhost` for a
+phone-handoff session—the QR code must contain an address the phone can reach.
+Guest isolation, VPNs, and some venue networks can block device-to-device
+traffic even when both devices show the same Wi-Fi name.
 
-## Production check
+Finished web prints are kept in the running local process and disappear when
+that process restarts. Direct download remains available on the booth.
+
+## Run the native Mac app
 
 ```bash
-npm run build
-npm start
+./script/build_and_run.sh
 ```
 
-No internet connection is needed after dependencies are installed. The Space
-and Command-Shift-B hotkeys, on-screen shutter, and photo upload are all
-available. Print sound can be disabled from the camera screen.
+This builds `dist-mac/Snappy Booth.app`, ad-hoc signs it, and launches it. The
+app bundles its web interface and runs a native local photo server, so Node and
+a browser are not needed after the build.
+
+The app requests camera and local-network access only. It does not request
+microphone access. It is intended for local builds and is not notarized for
+general distribution.
+
+## Install the OpenHome ability
+
+Create an upload-ready archive:
+
+```bash
+./script/package_openhome.sh
+```
+
+Then follow
+[`openhome/ctrl-snap-host/README.md`](openhome/ctrl-snap-host/README.md).
+The booth works without OpenHome, and the OpenHome countdown/conversation works
+without an OpenAI API key. Optional outfit vision requires an API key supplied
+to the runtime as `OPENAI_API_KEY`; never put it in tracked source or an
+archive.
+
+## Point an agent at the repo
+
+An agent can bootstrap the project by reading `AGENTS.md` and running:
+
+```bash
+./script/setup.sh
+./script/doctor.sh --full
+```
+
+Codex-compatible harnesses can also install or invoke the included
+`$snappy-booth-setup` skill from `skills/snappy-booth-setup/`.
+
+A useful setup prompt is:
+
+> Read AGENTS.md, use the snappy-booth-setup skill, install the project, run the
+> full doctor, and launch the requested local mode. Do not deploy it or add
+> secrets.
+
+## Verify
+
+Quick repository and secret-safety checks:
+
+```bash
+./script/doctor.sh
+```
+
+Full lint, tests, web build, Swift build, and OpenHome syntax checks:
+
+```bash
+./script/doctor.sh --full
+```
+
+## Privacy and security
+
+- Camera frames and completed prints stay on the Mac unless a guest downloads
+  one or optional outfit vision is enabled.
+- QR handoff is a local-network feature; it is not a cloud gallery.
+- `.env*`, generated apps, build output, and OpenHome zip archives are ignored.
+- Never commit API keys. See [`SECURITY.md`](SECURITY.md) if a secret is exposed.
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).

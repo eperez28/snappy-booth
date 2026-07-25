@@ -25,7 +25,7 @@ except Exception:
 # variable can override it for managed setups.
 BRIDGE_TOKEN = os.environ.get(
     "CTRL_SNAP_BRIDGE_TOKEN",
-    "ctrl-snap-local-64f2b731e5c947b8a2db09c1",
+    "snappy-booth-local-bridge",
 )
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
 

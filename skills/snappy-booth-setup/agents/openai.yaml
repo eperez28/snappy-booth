@@ -1,0 +1,4 @@
+interface:
+  display_name: "Set Up Snappy Booth"
+  short_description: "Install and validate the complete booth stack"
+  default_prompt: "Use $snappy-booth-setup to install, validate, and run Snappy Booth on this Mac."

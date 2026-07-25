@@ -45,6 +45,9 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+/.venv-openhome/
+__pycache__/
+*.pyc
 
 # generated local artifacts
 /mac-assets/AppIcon.icns

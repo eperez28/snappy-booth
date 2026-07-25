@@ -32,8 +32,9 @@ test("server-renders the Snappy Booth welcome screen", async () => {
   assert.match(html, /<title>Snappy Booth — CTRL OVERDRIVE<\/title>/i);
   assert.match(html, /SNAPPY BOOTH/);
   assert.match(html, /CTRL OVERDRIVE/);
-  assert.match(html, /SNAP<span>\.<\/span>/);
-  assert.match(html, /START/);
+  assert.match(html, /Take a fun photo!/);
+  assert.match(html, /NEXT/);
+  assert.doesNotMatch(html, /SNAP<span>\.<\/span>/);
   assert.match(html, /aria-label="Step 1 of 3"/);
   assert.doesNotMatch(html, /Cloud|account|microphone/i);
 });

@@ -15,14 +15,17 @@ The repository is one monorepo with three public pieces:
 
 No source from the private Snappy Mac app is included or required.
 
-## Fast setup
+## Choose a mode
 
-Requirements:
+| Goal | Requirements | Command |
+| --- | --- | --- |
+| Try it in Chrome | Node.js 22.13+ | `npm ci && npm run dev` |
+| Share photos by QR on local Wi-Fi | Node.js 22.13+ | `npm ci && npm run dev:lan` |
+| Build the native Mac app | macOS 14+, Node.js 22.13+, Swift 5.10+ | `./script/setup.sh && ./script/build_and_run.sh` |
+| Package the OpenHome ability | Node.js 22.13+, Python 3 | `./script/setup.sh && ./script/package_openhome.sh` |
+| Prepare everything with an agent | macOS 14+, Node.js 22.13+, Swift 5.10+, Python 3 | `./script/setup.sh && ./script/doctor.sh --full` |
 
-- macOS 14 or newer for the native wrapper
-- Node.js 22.13 or newer
-- Swift 5.10 or newer for the native wrapper
-- Python 3 for OpenHome ability checks
+## Full monorepo setup
 
 ```bash
 git clone https://github.com/eperez28/snappy-booth.git

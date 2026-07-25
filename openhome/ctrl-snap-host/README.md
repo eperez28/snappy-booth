@@ -7,6 +7,8 @@ It supports:
 
 - A spoken countdown synchronized from Snappy Booth events
 - Outfit-aware, playful hype before or after a photo
+- A short, real back-and-forth conversation after each captured photo
+- An on-demand conversation entry using a trigger such as `talk to Snappy`
 - A fixed booth goodbye
 - Optional LED or sound extensions through other Local Abilities
 - A token-protected, local-network-only event bridge
@@ -34,11 +36,21 @@ the vision call.
 3. Name it `Snappy Booth Host`.
 4. Upload the zip and attach it to the Agent used by the DevKit.
 5. Enable Advanced DevKit Controls, sync abilities, and restart the Agent.
-6. Use trigger words such as `control snap status` for the optional health
-   check in `main.py`.
+6. Keep the installed Local Bridge enabled as a System Ability. The automatic
+   conversation starts after each `photo_captured` event and does not need a
+   spoken trigger.
 
 `background.py` starts automatically with the Agent and starts the LAN listener
-on port `8765`.
+on port `8765`. After a `photo_captured` event, it gives the outfit line, asks
+the guest an easy question, listens through OpenHome's normal speech pipeline,
+and carries a maximum four-turn conversation. Silence, `done`, `stop`, `bye`,
+or `thanks` ends the exchange.
+
+`main.py` also provides an optional on-demand five-turn conversation. OpenHome
+currently treats Agent and System scope as mutually exclusive, so use that
+entrypoint only from a separate Agent-scoped installation if you want spoken
+triggers such as `talk to Snappy`. The booth's automatic post-photo
+conversation should remain System-scoped.
 
 ## Event protocol
 

@@ -27,10 +27,7 @@ BRIDGE_TOKEN = os.environ.get(
     "CTRL_SNAP_BRIDGE_TOKEN",
     "ctrl-snap-local-64f2b731e5c947b8a2db09c1",
 )
-OPENAI_API_KEY = os.environ.get(
-    "OPENAI_API_KEY",
-    "",
-)
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
 
 OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 OPENAI_MODEL = "gpt-4o"
@@ -306,10 +303,7 @@ def analyze_outfit(image_url, group_size="1"):
     if not image_url:
         _emit({"ok": False, "error": "missing_image_url"})
         return
-    if (
-        not OPENAI_API_KEY
-        or OPENAI_API_KEY == ""
-    ):
+    if not OPENAI_API_KEY:
         _emit({"ok": False, "error": "openai_key_not_configured"})
         return
 

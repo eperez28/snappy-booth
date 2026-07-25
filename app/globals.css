@@ -1266,8 +1266,24 @@ footer {
   filter: drop-shadow(0 0 26px rgba(132,207,250,.55));
 }
 
+.welcome-prompt {
+  position: relative;
+  z-index: 3;
+  width: min(65vw, 1000px);
+  margin: 0;
+  color: #f4f4ef;
+  font-family: "Caveat Variable", cursive;
+  font-size: clamp(132px, 14vw, 220px);
+  font-weight: 720;
+  line-height: .76;
+  letter-spacing: -.025em;
+  white-space: normal;
+  text-shadow: 0 0 24px rgba(141,210,255,.22);
+  transform: rotate(-1.5deg);
+}
+
 .minimal-welcome .enter-button {
-  margin-top: 58px;
+  margin-top: 32px;
 }
 
 .camera-screen {
@@ -1760,6 +1776,10 @@ footer {
   .sound-toggle { min-height: 47px; }
   .minimal-welcome { display: flex; }
   .minimal-welcome h1 { font-size: 31vw; }
+  .welcome-prompt {
+    width: 100%;
+    font-size: clamp(72px, 20vw, 104px);
+  }
   .camera-screen .camera-wrap { width: 100%; height: calc(100svh - 235px); min-height: 0; }
   .printer-scene { min-height: 560px; }
   .filter-screen { overflow: auto; }

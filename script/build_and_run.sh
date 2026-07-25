@@ -19,6 +19,13 @@ APP_BINARY="$APP_MACOS/$APP_PROCESS"
 INFO_PLIST="$APP_CONTENTS/Info.plist"
 
 cd "$ROOT_DIR"
+if /usr/bin/pgrep -x "$APP_PROCESS" >/dev/null 2>&1; then
+  /usr/bin/pkill -x "$APP_PROCESS"
+  for _ in {1..20}; do
+    /usr/bin/pgrep -x "$APP_PROCESS" >/dev/null 2>&1 || break
+    sleep 0.1
+  done
+fi
 npm run build:mac-web
 swift build
 ./script/build_app_icon.sh
@@ -71,7 +78,7 @@ PLIST
 /usr/bin/codesign --force --deep --sign - "$APP_BUNDLE" >/dev/null
 
 open_app() {
-  /usr/bin/open "$APP_BUNDLE"
+  /usr/bin/open -n "$APP_BUNDLE"
 }
 
 case "$MODE" in

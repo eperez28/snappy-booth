@@ -1175,6 +1175,7 @@ export default function Booth() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const startCameraRef = useRef<() => Promise<void>>(async () => {});
   const captureRef = useRef<() => void>(() => {});
   const captureBusyRef = useRef(false);
   const captureSequenceRef = useRef(false);
@@ -1219,6 +1220,9 @@ export default function Booth() {
       setCameraError("NO CAMERA");
     }
   };
+  useEffect(() => {
+    startCameraRef.current = startCamera;
+  });
 
   const commitPhoto = async (data: string) => {
     if (captureBusyRef.current) return;
@@ -1319,7 +1323,7 @@ export default function Booth() {
         !event.ctrlKey &&
         !event.altKey;
       if (
-        stage !== "camera" ||
+        (stage !== "welcome" && stage !== "camera") ||
         event.repeat ||
         (!isSpace && !isBoothShortcut)
       ) {
@@ -1328,6 +1332,10 @@ export default function Booth() {
       const target = event.target as HTMLElement | null;
       if (target?.matches("input, textarea, select, [contenteditable='true']")) return;
       event.preventDefault();
+      if (stage === "welcome") {
+        void startCameraRef.current();
+        return;
+      }
       if (soundOn) preparePrintSound();
       captureRef.current();
     };
@@ -1386,13 +1394,6 @@ export default function Booth() {
   }, [finalImage, stage]);
 
   const reset = () => {
-    if (photo && !goodbyeSentRef.current) {
-      goodbyeSentRef.current = true;
-      void sendCtrlSnapHostEvent({
-        type: "goodbye",
-        session_id: sessionRef.current,
-      });
-    }
     stopCamera();
     setPhoto("");
     setFinalImage("");
@@ -1448,9 +1449,9 @@ export default function Booth() {
       {stage === "welcome" && (
         <section className="welcome minimal-welcome screen">
           <div className="welcome-copy">
-            <h1>SNAP<span>.</span></h1>
-            <button className="primary enter-button" onClick={startCamera}>
-              START <span>↗</span>
+            <p className="welcome-prompt">Take a fun photo!</p>
+            <button className="primary enter-button" data-snappy-trigger onClick={startCamera}>
+              NEXT <span>↗</span>
             </button>
           </div>
           <div className="portal" aria-hidden="true">
@@ -1498,10 +1499,15 @@ export default function Booth() {
             <button className="icon-button" onClick={() => fileRef.current?.click()} aria-label="Load photo">
               ↑
             </button>
-            <button className="shutter" onClick={capture} disabled={!!cameraError || countdown !== null}>
+            <button
+              className="shutter"
+              data-snappy-trigger
+              onClick={capture}
+              disabled={!!cameraError || countdown !== null}
+            >
               <span />
             </button>
-            <button className="icon-button" onClick={startCamera} aria-label="Reset camera">↻</button>
+            <button className="icon-button" onClick={reset} aria-label="Start over">↻</button>
           </div>
           <input
             ref={fileRef}

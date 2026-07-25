@@ -41,10 +41,11 @@ the vision call.
    spoken trigger.
 
 `background.py` starts automatically with the Agent and starts the LAN listener
-on port `8765`. After a `photo_captured` event, it gives the outfit line, asks
-the guest an easy question, listens through OpenHome's normal speech pipeline,
-and carries a maximum four-turn conversation. Silence, `done`, `stop`, `bye`,
-or `thanks` ends the exchange.
+on port `8765`. After a `photo_captured` event, it gives the outfit line and
+asks the guest an easy question. OpenHome's normal live conversation handles
+the guest's response and follow-ups. The booth daemon never waits on
+`user_response()`, so a new `countdown_start` cannot get stuck behind a guest
+conversation.
 
 `main.py` also provides an optional on-demand five-turn conversation. OpenHome
 currently treats Agent and System scope as mutually exclusive, so use that

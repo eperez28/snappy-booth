@@ -49,7 +49,7 @@ struct BoothWebView: NSViewRepresentable {
                 queue: .main
             ) { [weak self] _ in
                 self?.webView?.evaluateJavaScript(
-                    "window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Space', bubbles: true }));"
+                    "document.querySelector('[data-snappy-trigger]')?.click();"
                 )
             }
         }

@@ -31,14 +31,17 @@ struct CTRLSnapApp: App {
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let server = LocalBoothServer()
+    private let globalCaptureHotKey = GlobalCaptureHotKey()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
         server.start()
+        globalCaptureHotKey.install()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        globalCaptureHotKey.uninstall()
         server.stop()
     }
 }
